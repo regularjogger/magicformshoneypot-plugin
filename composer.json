@@ -1,0 +1,8 @@
+{
+    "name": "regularjogger/magicformshoneypot-plugin",
+    "type": "october-plugin",
+    "description": "Dismisses bot submissions to Magic Forms using the honeypot technique.",
+    "require": {
+        "composer/installers": "~1.0"
+    }
+}
