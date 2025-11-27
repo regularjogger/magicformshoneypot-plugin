@@ -58,7 +58,6 @@ class Plugin extends PluginBase
             'functions' => [
                 'honeypot_field' => [function(string $label = 'Web', string $type = 'text', string $id = 'web', string $name = 'web', string $placeholder = 'www', string $class = 'web-form-control'): string
                 {
-                    //return '<label>Web <input type="text" id="web" name="web" placeholder="www" class="web-form-control"></label>';
                     return sprintf('<label>%s <input type="%s" id="%s" name="%s" placeholder="%s" class="%s"></label>', $label, $type, $id, $name, $placeholder, $class);
                 }, false]
             ]
