@@ -29,7 +29,11 @@ class Plugin extends PluginBase
     /**
      * @var array compatible plugins
      */
-    public $compatPlugins = ['martin.forms', 'blakejones.magicforms', 'publipresse.forms'];
+    public $compatPlugins = [
+        'martin.forms',
+        'blakejones.magicforms',
+        'publipresse.forms'
+    ];
 
     /**
      * boot method, called right before the request route.
@@ -56,10 +60,20 @@ class Plugin extends PluginBase
     {
         return [
             'functions' => [
-                'honeypot_field' => [function(string $label = 'Web', string $type = 'text', string $id = 'web', string $name = 'web', string $placeholder = 'www', string $class = 'web-form-control'): string
-                {
-                    return sprintf('<label>%s <input type="%s" id="%s" name="%s" placeholder="%s" class="%s"></label>', $label, $type, $id, $name, $placeholder, $class);
-                }, false]
+                'honeypot_field' => [
+                    function(
+                        string $label = 'Web',
+                        string $type = 'text',
+                        string $id = 'web',
+                        string $name = 'web',
+                        string $placeholder = 'www',
+                        string $class = 'web-form-control'
+                    ): string
+                    {
+                        return sprintf('<label>%s <input type="%s" id="%s" name="%s" placeholder="%s" class="%s"></label>', $label, $type, $id, $name, $placeholder, $class);
+                    },
+                    false
+                ]
             ]
         ];
     }
