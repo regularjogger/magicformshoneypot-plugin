@@ -4,7 +4,8 @@ namespace RegularJogger\MagicFormsHoneypot;
 
 use System\Classes\PluginBase;
 use Event;
-use Log;
+use Log; // pryč
+use RegularJogger\MagicFormsHoneypot\Classes\BotDetector;
 
 /**
  * Plugin Information File
@@ -37,25 +38,31 @@ class Plugin extends PluginBase
     ];
 
     /**
+     * method to detect bot submissions
+     */
+    public function detectBots(array &$post, object $component): void
+    {
+        if (! empty($post['web']) || ! array_key_exists('web-url', $post) || ! empty($post['web-url'])) {
+            $post['HONEYPOT_web'] = $post['web'];
+            unset($post['web']);
+            $post['HONEYPOT_TIMED_web_url'] = $post['web_url'];
+            unset($post['web-url']);
+            Log::info('Magic Forms submission dismissed.' . PHP_EOL . PHP_EOL . 'Form alias/name: ' . $component->alias . '/' . $component->name . PHP_EOL . PHP_EOL . print_r($post, true));
+            $component->setProperty('mail_enabled', 0);
+            $component->setProperty('mail_resp_enabled', 0);
+            $component->setProperty('skip_database', 1);
+        }
+        unset($post['web']);
+        unset($post['web-url']);
+    }
+
+    /**
      * boot method, called right before the request route.
      */
     public function boot(): void
     {
         foreach ($this->compatPlugins as $plugin) {
-            Event::listen( $plugin . '.beforeSaveRecord', function (array &$post, object $component): void {
-                if (! empty($post['web']) || ! array_key_exists('web-url', $post) || ! empty($post['web-url'])) {
-                    $post['HONEYPOT_web'] = $post['web'];
-                    unset($post['web']);
-                    $post['HONEYPOT_TIMED_web-url'] = $post['web-url'];
-                    unset($post['web-url']);
-                    Log::info('Magic Forms submission dismissed.' . PHP_EOL . PHP_EOL . 'Form alias/name: ' . $component->alias . '/' . $component->name . PHP_EOL . PHP_EOL . print_r($post, true));
-                    $component->setProperty('mail_enabled', 0);
-                    $component->setProperty('mail_resp_enabled', 0);
-                    $component->setProperty('skip_database', 1);
-                }
-                unset($post['web']);
-                unset($post['web-url']);
-            });
+            Event::listen( $plugin . '.beforeSaveRecord', [$this, 'detectBots']);
         }
     }
 
@@ -65,32 +72,7 @@ class Plugin extends PluginBase
     public function registerComponents(): array
     {
         return [
-            'regularJogger\MagicFormsHoneypot\Components\HoneypotAssets' => 'honeypotAssets'
-        ];
-    }
-
-    /**
-     * registerMarkupTags used
-     */
-    public function registerMarkupTags(): array
-    {
-        return [
-            'functions' => [
-                'honeypot_field' => [
-                    function(
-                        string $label = 'Web',
-                        string $type = 'text',
-                        string $id = 'web',
-                        string $name = 'web',
-                        string $placeholder = 'www',
-                        string $class = 'web-form-control'
-                    ): string
-                    {
-                        return sprintf('<label>%s <input type="%s" id="%s" name="%s" placeholder="%s" class="%s"></label>', $label, $type, $id, $name, $placeholder, $class);
-                    },
-                    false
-                ]
-            ]
+            'regularJogger\MagicFormsHoneypot\Components\HoneypotFields' => 'honeypotFields'
         ];
     }
 }

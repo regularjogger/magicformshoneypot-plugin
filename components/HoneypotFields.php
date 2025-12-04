@@ -5,18 +5,18 @@ namespace RegularJogger\MagicFormsHoneypot\Components;
 use Cms\Classes\ComponentBase;
 
 /**
- * HoneypotAssets Component
+ * HoneypotFields Component
  *
  * @link https://docs.octobercms.com/4.x/extend/cms-components.html
  */
-class HoneypotAssets extends ComponentBase
+class HoneypotFields extends ComponentBase
 {
     public function componentDetails(): array
     {
         return [
-            'name' => 'Honeypot Assets',
-            'description' => 'Loads the honeypot assets.',
-            'icon' => 'icon-clock'
+            'name' => 'Honeypot fields',
+            'description' => 'Injects honeypot fields with required assets in your form.',
+            'icon' => 'icon-add-below'
         ];
     }
 
