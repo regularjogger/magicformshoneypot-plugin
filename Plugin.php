@@ -4,8 +4,7 @@ namespace RegularJogger\MagicFormsHoneypot;
 
 use System\Classes\PluginBase;
 use Event;
-use Log; // pryč
-use RegularJogger\MagicFormsHoneypot\Classes\BotDetector;
+use Log;
 
 /**
  * Plugin Information File
