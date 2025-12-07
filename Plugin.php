@@ -30,7 +30,7 @@ class Plugin extends PluginBase
     /**
      * compatible plugins
      */
-    public array $compatPlugins = [
+    protected array $compatPlugins = [
         'martin.forms',
         'blakejones.magicforms',
         'publipresse.forms'
@@ -39,7 +39,7 @@ class Plugin extends PluginBase
     /**
      * method to detect bot submissions
      */
-    public function detectBots(array &$post, object $component): void
+    protected function detectBots(array &$post, object $component): void
     {
         if (! empty($post['web']) || ! array_key_exists('web_url', $post) || ! empty($post['web_url'])) {
             $post['HONEYPOT_web'] = $post['web'];
