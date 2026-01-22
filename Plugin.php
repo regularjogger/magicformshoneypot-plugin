@@ -4,7 +4,8 @@ namespace RegularJogger\MagicFormsHoneypot;
 
 use System\Classes\PluginBase;
 use Event;
-use Log;
+use RegularJogger\MagicFormsHoneypot\Classes\Events\FormSubmissionHandler;
+use RegularJogger\MagicFormsHoneypot\Components\HoneypotField;
 
 /**
  * Plugin Information File
@@ -30,38 +31,19 @@ class Plugin extends PluginBase
     /**
      * compatible plugins
      */
-    protected array $compatPlugins = [
+    protected array $compatiblePlugins = [
         'martin.forms',
         'blakejones.magicforms',
         'publipresse.forms'
     ];
 
     /**
-     * method to detect bot submissions
-     */
-    protected function detectBots(array &$post, object $component): void
-    {
-        if (! empty($post['web']) || ! array_key_exists('web_url', $post) || ! empty($post['web_url'])) {
-            $post['HONEYPOT_web'] = $post['web'];
-            unset($post['web']);
-            $post['HONEYPOT_TIMED_web_url'] = $post['web_url'];
-            unset($post['web_url']);
-            Log::info('Magic Forms submission dismissed.' . PHP_EOL . PHP_EOL . 'Form alias/name: ' . $component->alias . '/' . $component->name . PHP_EOL . PHP_EOL . print_r($post, true));
-            $component->setProperty('mail_enabled', 0);
-            $component->setProperty('mail_resp_enabled', 0);
-            $component->setProperty('skip_database', 1);
-        }
-        unset($post['web']);
-        unset($post['web_url']);
-    }
-
-    /**
      * boot method, called right before the request route.
      */
     public function boot(): void
     {
-        foreach ($this->compatPlugins as $plugin) {
-            Event::listen( $plugin . '.beforeSaveRecord', [$this, 'detectBots']);
+        foreach ($this->compatiblePlugins as $plugin) {
+            Event::listen($plugin . '.beforeSaveRecord', FormSubmissionHandler::class);
         }
     }
 
@@ -71,7 +53,7 @@ class Plugin extends PluginBase
     public function registerComponents(): array
     {
         return [
-            'regularJogger\MagicFormsHoneypot\Components\HoneypotFields' => 'honeypotFields'
+            HoneypotField::class => 'honeypotField'
         ];
     }
 }

@@ -9,13 +9,13 @@ use Cms\Classes\ComponentBase;
  *
  * @link https://docs.octobercms.com/4.x/extend/cms-components.html
  */
-class HoneypotFields extends ComponentBase
+class HoneypotField extends ComponentBase
 {
     public function componentDetails(): array
     {
         return [
-            'name' => 'Honeypot fields',
-            'description' => 'Injects honeypot fields with required assets in your form.',
+            'name' => 'Honeypot field',
+            'description' => 'Injects honeypot input field with required assets in your form.',
             'icon' => 'icon-add-below'
         ];
     }
@@ -29,11 +29,18 @@ class HoneypotFields extends ComponentBase
     }
 
     /**
-     * Inject frontend assets
+     * onRun method, executed when page or layout loads.
      */
     public function onRun(): void
     {
+        $this->injectAssets();
+    }
+
+    /**
+     * Injects frontend assets.
+     */
+    protected function injectAssets(): void
+    {
         $this->addCss('assets/css/rj-moneyspot.css');
-        $this->addJs('assets/js/rj-moneyspot.js', ['defer' => true]);
     }
 }
