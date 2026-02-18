@@ -87,7 +87,7 @@ class FormSubmissionHandler
     protected function logSubmission(): void
     {
         $this->logger->info(
-            'Magic Forms submission dismissed.'
+            'Magic Form submission dismissed.'
             . PHP_EOL . PHP_EOL .
             'Form alias / name: ' . $this->formAlias . ' / ' .$this->formName
             . PHP_EOL . PHP_EOL .
