@@ -3,10 +3,26 @@
 namespace RegularJogger\MagicFormsHoneypot\Classes\Events;
 
 use Cms\Classes\ComponentBase;
-use Log;
+use Illuminate\Http\Request;
+use Psr\Log\LoggerInterface as Logger;
 
 class FormSubmissionHandler
 {
+    protected ?array $postData;
+    protected ?ComponentBase $formObject;
+    protected string $honeypotFieldName = 'web';
+    protected ?string $honeypotFieldValue;
+    protected ?string $formAlias;
+    protected ?string $formName;
+    protected ?string $url;
+    protected ?string $userAgent;
+    protected ?string $userIpAddr;
+
+    public function __construct(
+        protected Request $request,
+        protected Logger $logger,
+    ) {}
+
     /**
      * Entry point - initialises submission data, then checks whether a bot submitted the form and delegates.
      */
@@ -27,15 +43,6 @@ class FormSubmissionHandler
         $this->passProcessedData($post, $formComponent);
     }
 
-    protected array $postData = [];
-    protected ?ComponentBase $formObject = null;
-    protected string $honeypotFieldName = 'web';
-    protected string $honeypotFieldValue = '';
-    protected string $formAlias = '';
-    protected string $formName = '';
-    protected string $userAgent = '';
-    protected string $userIpAddr = '';
-
     protected function isHoneypotPresent(array $post): bool
     {
         return isset($post[$this->honeypotFieldName]);
@@ -48,8 +55,9 @@ class FormSubmissionHandler
         $this->honeypotFieldValue = $this->postData[$this->honeypotFieldName];
         $this->formAlias = $this->formObject->alias;
         $this->formName = $this->formObject->name;
-        $this->userAgent = $_SERVER['HTTP_USER_AGENT'];
-        $this->userIpAddr = $_SERVER['REMOTE_ADDR'];
+        $this->url = $this->request->fullUrl();
+        $this->userAgent = $this->request->userAgent();
+        $this->userIpAddr = $this->request->ip();
     }
 
     protected function isBotSubmission(): bool
@@ -78,15 +86,19 @@ class FormSubmissionHandler
 
     protected function logSubmission(): void
     {
-        Log::info('Magic Forms submission dismissed.'
-        . PHP_EOL . PHP_EOL .
-        'Form alias/name: ' . $this->formAlias . '/' .$this->formName
-        . PHP_EOL . PHP_EOL .
-        print_r($this->postData, true)
-        . PHP_EOL .
-        'User-Agent: ' . $this->userAgent
-        . PHP_EOL .
-        'IP address: ' . $this->userIpAddr);
+        $this->logger->info(
+            'Magic Forms submission dismissed.'
+            . PHP_EOL . PHP_EOL .
+            'Form alias / name: ' . $this->formAlias . ' / ' .$this->formName
+            . PHP_EOL . PHP_EOL .
+            print_r($this->postData, true)
+            . PHP_EOL .
+            'URL: ' . $this->url
+            . PHP_EOL .
+            'User-Agent: ' . $this->userAgent
+            . PHP_EOL .
+            'IP address: ' . $this->userIpAddr
+        );
     }
 
     protected function disableMail(): void
